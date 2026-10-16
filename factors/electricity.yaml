@@ -1,0 +1,226 @@
+# Electricity carbon-intensity factors: grid averages (eGRID), per-fuel generation factors (EIA),
+# lifecycle factors for clean generation (IPCC AR5 Annex III), and losses.
+category: electricity
+factors:
+  - id: egrid2023_erct_co2_output_rate
+    name: eGRID2023 ERCOT (ERCT) total output emission rate, CO2
+    value: 733.862
+    unit: lbCO2/MWh
+    low: 700.7
+    high: 771.1
+    source: "EPA eGRID2023 Summary Tables (rev. 2, 2025), Subregion Output Emission Rates, ERCT"
+    url: https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.pdf
+    vintage: 2023
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "epa.gov unreachable from this environment; value from emission-factors.com mirror of eGRID2023 rev2 (733.862 CO2, 736.629 CO2e). low = eGRID2024 ERCT mirror (700.7), high = EPA GHG Equivalencies page ERCT baseload (771.1, earlier edition)"
+    notes: Annual-average, generation-based (not consumption-based; apply grid gross loss for delivered).
+
+  - id: egrid2023_erct_co2e_output_rate
+    name: eGRID2023 ERCOT (ERCT) total output emission rate, CO2e
+    value: 736.629
+    unit: lbCO2e/MWh
+    low: 700.7
+    high: 775.0
+    source: "EPA eGRID2023 Summary Tables (rev. 2, 2025), Subregion Output Emission Rates, ERCT"
+    url: https://www.epa.gov/system/files/documents/2025-06/summary_tables_rev2.pdf
+    vintage: 2023
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "mirror of eGRID2023 rev2 (emission-factors.com); EPA PDF not reachable"
+    notes: CO2e uses eGRID's own GWPs (AR4/AR5 - confirm in technical guide at M3).
+
+  - id: egrid2023_us_co2_output_rate
+    name: eGRID2023 U.S. total output emission rate, CO2
+    value: 771.5
+    unit: lbCO2/MWh
+    low: 750.0
+    high: 852.3
+    source: "EPA eGRID2023 Summary Tables (rev. 1, Jan 2025), U.S. row"
+    url: https://www.epa.gov/system/files/documents/2025-01/egrid2023_summary_tables_rev1.pdf
+    vintage: 2023
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "search snippet of the EPA rev1 PDF shows row '771.5 | 0.057 | 0.008 | 775.2' beside a 'U.S.' marker; header not visible, so provisional. high = eGRID2021 U.S. value from knowledge (verify)"
+
+  - id: egrid2023_erct_grid_gross_loss
+    name: eGRID2023 ERCOT (ERCT) grid gross loss
+    value: 0.042
+    unit: fraction
+    low: 0.040
+    high: 0.055
+    source: "EPA eGRID2023 Summary Tables (rev. 1), Grid Gross Loss, ERCT"
+    url: https://www.epa.gov/system/files/documents/2025-01/egrid2023_summary_tables_rev1.pdf
+    vintage: 2023
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "snippet shows ERCT row ending in 4.2% in the rev1 PDF; column header not visible. Range assumed from typical U.S. T&D losses (verify)"
+    notes: Converts generation-based CI to delivered CI as CI/(1-loss).
+
+  - id: eia_co2_per_kwh_coal
+    name: EIA U.S. CO2 emitted per kWh generated from coal (2023)
+    value: 2.31
+    unit: lbCO2/kWh
+    low: 2.257
+    high: 2.31
+    source: "EIA FAQ 74: How much CO2 is produced per kWh of U.S. electricity generation? (2023 data)"
+    url: https://www.eia.gov/tools/faqs/faq.php?id=74&t=11
+    vintage: 2023
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "eia.gov FAQ snippet: coal 2.31, natural gas 0.96, petroleum 2.46 lb/kWh (2023); 2019 edition: coal 2,257 lb/MWh, gas 976 lb/MWh"
+    notes: Direct combustion only (no upstream). Used to build hourly CI from the EIA fuel mix.
+
+  - id: eia_co2_per_kwh_natural_gas
+    name: EIA U.S. CO2 emitted per kWh generated from natural gas (2023)
+    value: 0.96
+    unit: lbCO2/kWh
+    low: 0.96
+    high: 0.976
+    source: "EIA FAQ 74 (2023 data); 2019 edition for range"
+    url: https://www.eia.gov/tools/faqs/faq.php?id=74&t=11
+    vintage: 2023
+    verification: {status: primary, date: 2026-10-16, method: "eia.gov FAQ snippet"}
+    notes: Fleet average across CC, CT and steam units. Direct combustion only.
+
+  - id: eia_co2_per_kwh_petroleum
+    name: EIA U.S. CO2 emitted per kWh generated from petroleum (2023)
+    value: 2.46
+    unit: lbCO2/kWh
+    low: 2.34
+    high: 2.58
+    source: "EIA FAQ 74 (2023 data)"
+    url: https://www.eia.gov/tools/faqs/faq.php?id=74&t=11
+    vintage: 2023
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "eia.gov FAQ snippet; low/high set to +/-5% because only one vintage was seen (assumption, see methodology)"
+
+  - id: eia_us_average_co2_per_kwh
+    name: EIA U.S. average CO2 per kWh, all utility-scale generation (2023)
+    value: 0.81
+    unit: lbCO2/kWh
+    low: 0.78
+    high: 0.86
+    source: "EIA FAQ 74 (2023 data)"
+    url: https://www.eia.gov/tools/faqs/faq.php?id=74&t=11
+    vintage: 2023
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "eia.gov FAQ snippet; range assumed +/-~5% pending older editions"
+
+  - id: eia_coal_combustion_co2_per_mmbtu
+    name: EIA CO2 emission coefficient, coal (electric power sector)
+    value: 211.63
+    unit: lbCO2/MMBtu
+    low: 205.0
+    high: 215.0
+    source: "EIA, Carbon Dioxide Emissions Coefficients by Fuel"
+    url: https://www.eia.gov/environment/emissions/co2_vol_mass.php
+    vintage: 2023
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "eia.gov snippet: coal 211.63, natural gas 116.65 lb CO2/MMBtu. Range spans coal ranks (assumption)"
+
+  - id: eia_natural_gas_combustion_co2_per_mmbtu
+    name: EIA CO2 emission coefficient, natural gas
+    value: 116.65
+    unit: lbCO2/MMBtu
+    low: 115.0
+    high: 118.0
+    source: "EIA, Carbon Dioxide Emissions Coefficients by Fuel"
+    url: https://www.eia.gov/environment/emissions/co2_vol_mass.php
+    vintage: 2023
+    verification: {status: primary, date: 2026-10-16, method: "eia.gov snippet; range assumed +/-~1.5%"}
+
+  - id: lca_wind_onshore_ar5
+    name: Lifecycle CI of onshore wind electricity (IPCC AR5 median)
+    value: 11
+    unit: gCO2e/kWh
+    low: 7
+    high: 56
+    source: "IPCC AR5 WG3, Annex III, Table A.III.2 (min/median/max)"
+    url: https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf
+    vintage: 2014
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "STET Review table of IPCC AR5 values: wind onshore 7/11/56; IPCC PDF unreachable"
+
+  - id: lca_solar_pv_utility_ar5
+    name: Lifecycle CI of utility-scale PV electricity (IPCC AR5 median)
+    value: 48
+    unit: gCO2e/kWh
+    low: 18
+    high: 180
+    source: "IPCC AR5 WG3, Annex III, Table A.III.2"
+    url: https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf
+    vintage: 2014
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "STET Review table: PV utility 18/48/180"
+
+  - id: lca_nuclear_ar5
+    name: Lifecycle CI of nuclear electricity (IPCC AR5 median)
+    value: 12
+    unit: gCO2e/kWh
+    low: 3.7
+    high: 110
+    source: "IPCC AR5 WG3, Annex III, Table A.III.2"
+    url: https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf
+    vintage: 2014
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "median 12 confirmed via secondary (Nowtricity citing AR5); min/max from knowledge of the table (verify)"
+
+  - id: lca_hydro_ar5
+    name: Lifecycle CI of hydropower electricity (IPCC AR5 median)
+    value: 24
+    unit: gCO2e/kWh
+    low: 1
+    high: 2200
+    source: "IPCC AR5 WG3, Annex III, Table A.III.2"
+    url: https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf
+    vintage: 2014
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "median 24 confirmed via EURELECTRIC and Nowtricity citing AR5; max 2200 is the AR5 reservoir outlier"
+
+  - id: lca_gas_combined_cycle_ar5
+    name: Lifecycle CI of gas combined-cycle electricity (IPCC AR5 median)
+    value: 490
+    unit: gCO2e/kWh
+    low: 410
+    high: 650
+    source: "IPCC AR5 WG3, Annex III, Table A.III.2"
+    url: https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf
+    vintage: 2014
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "median 490 confirmed (arXiv 2608.29717 checked it against the IPCC PDF); min/max from knowledge (verify)"
+
+  - id: lca_coal_ar5
+    name: Lifecycle CI of coal electricity (IPCC AR5 median)
+    value: 820
+    unit: gCO2e/kWh
+    low: 740
+    high: 910
+    source: "IPCC AR5 WG3, Annex III, Table A.III.2"
+    url: https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf
+    vintage: 2014
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "median 820 confirmed (arXiv 2608.29717 checked it against the IPCC PDF); min/max from knowledge (verify)"

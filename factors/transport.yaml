@@ -1,0 +1,41 @@
+# Transport emission factors for product distribution (EPA GHG Emission Factors Hub 2025, Table 8).
+category: transport
+factors:
+  - id: epa_hub_2025_truck_freight
+    name: Medium- and heavy-duty truck freight, well-to-wheel CO2e per short-ton-mile
+    value: 0.1875
+    unit: kgCO2e/ton-mile
+    low: 0.1875
+    high: 0.209
+    source: "EPA GHG Emission Factors Hub (Jan 2025), Table 8 Upstream/Downstream Transportation (product transport)"
+    url: https://www.epa.gov/climateleadership/ghg-emission-factors-hub
+    vintage: 2025
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "Climatiq mirror of the 2025 Hub: 0.1874758 kgCO2e/ton-mile; high = 2021-2023 Hub value from knowledge (verify); epa.gov unreachable"
+
+  - id: epa_hub_2025_rail_freight
+    name: Rail freight CO2e per short-ton-mile
+    value: 0.0212
+    unit: kgCO2e/ton-mile
+    low: 0.0212
+    high: 0.022
+    source: "EPA GHG Emission Factors Hub (Jan 2025), Table 8"
+    url: https://www.epa.gov/climateleadership/ghg-emission-factors-hub
+    vintage: 2025
+    verification: {status: secondary, date: 2026-10-16, method: "Climatiq mirror: 0.0211773 kgCO2e/ton-mile"}
+
+  - id: epa_hub_2025_waterborne_freight
+    name: Waterborne craft freight CO2e per short-ton-mile
+    value: 0.0784
+    unit: kgCO2e/ton-mile
+    low: 0.040
+    high: 0.0784
+    source: "EPA GHG Emission Factors Hub (Jan 2025), Table 8"
+    url: https://www.epa.gov/climateleadership/ghg-emission-factors-hub
+    vintage: 2025
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "Climatiq mirror: 0.078398 kgCO2e/ton-mile; low = earlier Hub editions from knowledge (verify)"

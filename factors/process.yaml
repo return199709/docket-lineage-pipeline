@@ -1,0 +1,472 @@
+# Process factors: fuel properties, combustion, electrolysis, CO2 capture, Fischer-Tropsch,
+# and rulebook constants (comparators and thresholds).
+category: process
+factors:
+  # ---- fuel properties (IPCC 2006 Guidelines, Vol. 2, Ch. 1) ----
+  - id: jet_kerosene_ncv
+    name: Net calorific value of jet kerosene
+    value: 44.1
+    unit: MJ/kg
+    low: 42.0
+    high: 45.0
+    source: "2006 IPCC Guidelines, Vol. 2 Energy, Ch. 1, Table 1.2 (default NCVs, 95% CI)"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "ipcc-nggip.iges.or.jp Table 1.2 snippet: Jet Kerosene 44.1 (42.0-45.0)"
+    notes: TJ/Gg == MJ/kg. Used for fossil-jet comparator energy basis and for FT-SPK (same NCV assumed, see methodology).
+
+  - id: gas_diesel_oil_ncv
+    name: Net calorific value of gas/diesel oil
+    value: 43.0
+    unit: MJ/kg
+    low: 41.4
+    high: 43.3
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Table 1.2"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification: {status: primary, date: 2026-10-16, method: "Table 1.2 snippet: Gas/Diesel Oil 43.0 (41.4-43.3)"}
+
+  - id: natural_gas_ncv
+    name: Net calorific value of natural gas
+    value: 48.0
+    unit: MJ/kg
+    low: 46.5
+    high: 50.4
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Table 1.2"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "EU MRR Annex VI (cites IPCC 2006 GL): Natural gas 48.0; Climate Accountability sheet: 48.00 (46.5-50.4)"
+
+  - id: sub_bituminous_coal_ncv
+    name: Net calorific value of sub-bituminous coal
+    value: 18.9
+    unit: MJ/kg
+    low: 11.5
+    high: 26.0
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Table 1.2"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "EU MRR Annex VI (cites IPCC 2006 GL): Sub-bituminous coal 18.9; CI bounds from knowledge (verify)"
+
+  - id: jet_kerosene_carbon_content
+    name: Carbon content of jet kerosene
+    value: 19.5
+    unit: tC/TJ
+    low: 19.0
+    high: 20.3
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Table 1.3 (default carbon contents)"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "Table 1.3 snippet shows Jet Kerosene 19.5; bounds from knowledge of Table 1.3 (verify)"
+
+  - id: natural_gas_carbon_content
+    name: Carbon content of natural gas
+    value: 15.3
+    unit: tC/TJ
+    low: 14.8
+    high: 15.9
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Table 1.3"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification: {status: primary, date: 2026-10-16, method: "Table 1.3 snippet: Natural Gas 15.3 (14.8-15.9)"}
+
+  - id: jet_kerosene_co2_ef
+    name: CO2 emission factor, jet kerosene combustion (100% oxidation)
+    value: 71500
+    unit: kgCO2/TJ
+    low: 69700
+    high: 74400
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Table 1.4 (= carbon content x 44/12)"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification:
+      status: derived
+      date: 2026-10-16
+      method: "derived from verified carbon content 19.5 tC/TJ x 44/12 = 71,500; bounds 19.0/20.3 x 44/12. Table 1.4 itself not seen this session"
+    notes: 71.5 gCO2/MJ. Combustion CO2 of eSAF is the same per MJ but is netted against captured CO2 (see methodology).
+
+  - id: natural_gas_co2_ef
+    name: CO2 emission factor, natural gas combustion
+    value: 56100
+    unit: kgCO2/TJ
+    low: 54300
+    high: 58300
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Table 1.4"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "UN OSD slide deck on IPCC 2006 Vol. 2: 'Natural gas 48 56100'; consistent with verified carbon content 15.3 x 44/12"
+
+  - id: gas_diesel_oil_co2_ef
+    name: CO2 emission factor, gas/diesel oil combustion
+    value: 74100
+    unit: kgCO2/TJ
+    low: 72600
+    high: 74800
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Table 1.4"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification:
+      status: unverified
+      date: 2026-10-16
+      method: "from knowledge of Table 1.4; not seen this session. Verify before use (eDiesel comparator)"
+
+  - id: sub_bituminous_coal_co2_ef
+    name: CO2 emission factor, sub-bituminous coal combustion
+    value: 96100
+    unit: kgCO2/TJ
+    low: 92800
+    high: 100000
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Table 1.4"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "EU MRR Annex VI (cites IPCC 2006 GL): Sub-bituminous coal 96.1 tCO2/TJ; bounds from knowledge (verify)"
+
+  - id: diesel_density
+    name: Density of diesel (Concawe e-fuels basis)
+    value: 0.832
+    unit: kg/L
+    low: 0.820
+    high: 0.845
+    source: "Concawe report 24/4 (E-Fuels techno-economic assessment), energy basis: 44 GJ/t, 0.832 kg/l"
+    url: https://www.concawe.eu/wp-content/uploads/Rpt_24-4-1.pdf
+    vintage: 2024
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "concawe.eu snippet: 'liquid energy content of 44 GJ/t and a density of 0.832 kg/l'; bounds = EN 590 spec range (knowledge)"
+
+  - id: h2_lhv
+    name: Lower heating value of hydrogen
+    value: 120.0
+    unit: MJ/kg
+    low: 119.9
+    high: 120.1
+    source: "U.S. DOE, Technical Targets for Onboard Hydrogen Storage: LHV = 33.3 kWh/kg H2 (= 120 MJ/kg)"
+    url: https://www.energy.gov/eere/fuelcells/doe-technical-targets-onboard-hydrogen-storage-light-duty-vehicles
+    vintage: 2020
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "energy.gov snippet: 'Lower heating value for H2 is 33.3 kWh/kg H2'; NREL fy25osti/91674 uses 120 MJ/kg"
+    notes: Physical constant; range is rounding only.
+
+  # ---- electrolysis ----
+  - id: electrolysis_efficiency_lhv
+    name: Electrolyser system efficiency (LHV H2 out / electricity in)
+    value: 0.68
+    unit: fraction
+    low: 0.665
+    high: 0.75
+    source: "Concawe/LBST, E-Fuels techno-economic assessment (rpt 17/22, update 24/4), presentation table: 66.5% (2020), 68% (2030), 75% (2050); ICCT (Zhou, Searle, Pavlenko 2022) ~70%"
+    url: https://www.concawe.eu/wp-content/uploads/Session-2-Presentation-3-Alba-Soler-and-Patrick-Schmidt.pdf
+    vintage: 2022
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "concawe.eu presentation snippet: 'electrolysis efficiency at 66.5% for 2020, 68% for 2030, and 75% for 2050'; theicct.org 2022 PDF snippet: 'Water electrolysis conversion efficiency~70%'"
+    notes: value = 2030 case (plant commissioning ~2027-2030); low = 2020, high = 2050.
+
+  - id: electrolysis_specific_energy
+    name: Electrolyser specific energy (electricity per kg H2)
+    value: 49.0
+    unit: kWh/kgH2
+    low: 44.4
+    high: 50.1
+    source: "Derived: h2_lhv / electrolysis_efficiency_lhv = 33.33 / 0.68"
+    url: https://www.concawe.eu/wp-content/uploads/Session-2-Presentation-3-Alba-Soler-and-Patrick-Schmidt.pdf
+    vintage: 2022
+    verification:
+      status: derived
+      date: 2026-10-16
+      method: "33.33 kWh/kg / 0.68 = 49.0; low 33.33/0.75 = 44.4; high 33.33/0.665 = 50.1"
+
+  # ---- CO2 capture ----
+  - id: dac_liquid_solvent_electricity
+    name: DAC electricity demand, liquid-solvent (KOH/CaCO3) process, CO2 at 15 MPa
+    value: 366
+    unit: kWh/tCO2
+    low: 0
+    high: 366
+    source: "Keith, Holmes, St. Angelo, Heidel (2018) 'A Process for Capturing CO2 from the Atmosphere', Joule 2(8):1573-1594: 5.25 GJ gas + 366 kWh electricity per tCO2 (or 8.81 GJ gas, all-gas config)"
+    url: https://doi.org/10.1016/j.joule.2018.05.006
+    vintage: 2018
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "Harvard Belfer Center abstract of the paper: 'either 8.81 GJ of natural gas, or 5.25 GJ of gas and 366 kWhr of electricity, per ton of CO2'"
+    notes: low = 0 corresponds to the all-gas configuration (then gas = 8.81 GJ/t).
+
+  - id: dac_liquid_solvent_gas
+    name: DAC natural-gas demand, liquid-solvent process (electricity+gas config)
+    value: 5.25
+    unit: GJ/tCO2
+    low: 5.25
+    high: 8.81
+    source: "Keith et al. (2018), Joule 2(8):1573-1594"
+    url: https://doi.org/10.1016/j.joule.2018.05.006
+    vintage: 2018
+    verification: {status: secondary, date: 2026-10-16, method: "Belfer Center abstract (see dac_liquid_solvent_electricity)"}
+    notes: Gas combustion CO2 is captured in-process in the Keith design; treatment is a methodology assumption (M2).
+
+  - id: dac_solid_sorbent_electricity
+    name: DAC electricity demand, solid-sorbent (temperature-vacuum swing)
+    value: 236
+    unit: kWh/tCO2
+    low: 167
+    high: 305
+    source: "Literature range summarised in arXiv:2510.20135 (solar-thermal DAC design study): 167-305 kWh_el and 1.4-3.2 MWh_th per tCO2"
+    url: https://arxiv.org/pdf/2510.20135
+    vintage: 2025
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "arXiv snippet; IEA 'Direct Air Capture 2022' primary not reachable. value = midpoint of range"
+    notes: Replace with IEA DAC report table when network allows.
+
+  - id: dac_solid_sorbent_heat
+    name: DAC low-temperature heat demand, solid-sorbent (~100 C regeneration)
+    value: 2300
+    unit: kWh_th/tCO2
+    low: 1400
+    high: 3200
+    source: "Literature range summarised in arXiv:2510.20135"
+    url: https://arxiv.org/pdf/2510.20135
+    vintage: 2025
+    verification: {status: secondary, date: 2026-10-16, method: "arXiv snippet; value = midpoint"}
+
+  - id: co2_point_source_capture_heat
+    name: Amine post-combustion capture heat demand (flue gas / industrial point source)
+    value: 3.0
+    unit: GJ/tCO2
+    low: 2.5
+    high: 4.0
+    source: "IEAGHG / literature range for MEA and advanced solvents (to be cited precisely)"
+    url: https://ieaghg.org/
+    vintage: 2019
+    verification:
+      status: unverified
+      date: 2026-10-16
+      method: "from knowledge; no primary document seen this session. Must be verified before use"
+
+  - id: co2_compression_electricity
+    name: CO2 compression electricity (to pipeline/process pressure)
+    value: 100
+    unit: kWh/tCO2
+    low: 80
+    high: 120
+    source: "Literature range (to be cited precisely; e.g., IPCC SRCCS 2005 Ch. 4 / NETL)"
+    url: https://www.ipcc.ch/report/carbon-dioxide-capture-and-storage/
+    vintage: 2005
+    verification:
+      status: unverified
+      date: 2026-10-16
+      method: "from knowledge; must be verified before use"
+
+  # ---- Fischer-Tropsch synthesis ----
+  - id: ft_synthesis_efficiency
+    name: Fuel-synthesis efficiency (liquid fuel LHV / H2 LHV in), RWGS + FT + upgrading
+    value: 0.73
+    unit: fraction
+    low: 0.65
+    high: 0.80
+    source: "ICCT, Zhou, Searle, Pavlenko (2022) 'Current and future cost of e-kerosene in the US and Europe', process diagram: FT synthesis conversion efficiency ~73%"
+    url: https://theicct.org/wp-content/uploads/2022/02/fuels-us-europe-current-future-cost-ekerosene-us-europe-mar22.pdf
+    vintage: 2022
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "theicct.org PDF snippet: 'Fischer-Tropsch synthesis conversion efficiency~73%'; low/high are assumptions pending ICCT 2017 Table 3.2 (verify)"
+
+  - id: ptl_overall_efficiency_point_source
+    name: Overall PtL energy efficiency, e-kerosene, point-source CO2
+    value: 0.51
+    unit: fraction
+    low: 0.40
+    high: 0.51
+    source: "ICCT white paper (2023) citing Zhou et al. (2022): 46% (DAC) to 51% (point source); ICCT 2022 diagram: ~40%"
+    url: https://theicct.org/wp-content/uploads/2022/06/Aviation-2050-Report-A4-v6.pdf
+    vintage: 2023
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "theicct.org snippets: 'range from 46% (when carbon is captured using DAC) to 51% (when a point source is used)' and 'e-kerosene 40%'"
+    notes: Cross-check for the stage model, not an input.
+
+  - id: ptl_overall_efficiency_dac
+    name: Overall PtL energy efficiency, e-kerosene, DAC CO2
+    value: 0.46
+    unit: fraction
+    low: 0.40
+    high: 0.46
+    source: "ICCT (2023) citing Zhou et al. (2022)"
+    url: https://theicct.org/wp-content/uploads/2022/06/Aviation-2050-Report-A4-v6.pdf
+    vintage: 2023
+    verification: {status: primary, date: 2026-10-16, method: "theicct.org snippet (see point-source factor)"}
+
+  - id: ft_stoich_co2_per_kg_fuel
+    name: Stoichiometric CO2 demand per kg of -CH2- product
+    value: 3.14
+    unit: kgCO2/kgfuel
+    low: 3.14
+    high: 3.6
+    source: "Stoichiometry: CO2 + 3 H2 -> -CH2- + 2 H2O; 44.01/14.03 = 3.14 kg/kg (ideal). High bound allows ~15% carbon loss to tail gas"
+    url: https://doi.org/10.1039/C9SE00479C
+    vintage: 2020
+    verification:
+      status: derived
+      date: 2026-10-16
+      method: "chemistry; the high bound is an assumption to be replaced by a plant mass balance (Liu et al. 2020, Sustainable Energy & Fuels, or Concawe) at M2"
+
+  - id: ft_stoich_h2_per_kg_fuel
+    name: Stoichiometric H2 demand per kg of -CH2- product
+    value: 0.43
+    unit: kgH2/kgfuel
+    low: 0.43
+    high: 0.55
+    source: "Stoichiometry: 3 x 2.016 / 14.03 = 0.431 kg/kg (ideal); high bound allows ~25% H2 to tail gas/upgrading"
+    url: https://doi.org/10.1039/C9SE00479C
+    vintage: 2020
+    verification: {status: derived, date: 2026-10-16, method: "chemistry; high bound is an assumption (see methodology)"}
+
+  # ---- rulebook constants ----
+  - id: corsia_baseline_jet
+    name: CORSIA baseline life-cycle emissions value, jet fuel
+    value: 89
+    unit: gCO2e/MJ
+    low: 89
+    high: 89
+    source: "ICAO, CORSIA Methodology for Calculating Actual Life Cycle Emissions Values (ICAO document 07, Nov 2025); ICAO Annex 16 Vol. IV"
+    url: https://www.icao.int/sites/default/files/environmental-protection/CORSIA/Documents/CORSIA%20Eligible%20Fuels/ICAO-document-07-Methodology-for-Actual-Life-Cycle-Emissions-November-2025.pdf
+    vintage: 2025
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "icao.int snippet: 'LC ... equal to 89 gCO2e/MJ for Jet-A / Jet-A1 / Jet-B / TS-1 ... and 95 gCO2e/MJ for AvGas'"
+
+  - id: corsia_min_reduction
+    name: CORSIA minimum life-cycle reduction vs baseline for eligible fuels
+    value: 0.10
+    unit: fraction
+    low: 0.10
+    high: 0.10
+    source: "ICAO Annex 16 Vol. IV, CORSIA Sustainability Criteria; ICAO A42 WP/131"
+    url: https://www.icao.int/sites/default/files/Meetings/a42/Documents/WP/wp_131_en.pdf
+    vintage: 2025
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "icao.int WP/131 snippet: 'a 10% reduction in lifecycle emissions compared to the aviation fuel baseline of 89 gCO2e/MJ' (threshold 80.1)"
+
+  - id: rfnbo_fossil_comparator
+    name: RFNBO fossil fuel comparator (EU)
+    value: 94
+    unit: gCO2e/MJ
+    low: 94
+    high: 94
+    source: "Commission Delegated Regulation (EU) 2023/1185, Annex, point 1 (E_F = 94 gCO2eq/MJ)"
+    url: https://eur-lex.europa.eu/eli/reg_del/2023/1185/oj/eng
+    vintage: 2023
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "LawPlayer/Lexaris mirrors of the EUR-Lex text: 'the total emissions from the fossil fuel comparator shall be 94 gCO2eq/MJ'; eur-lex.europa.eu unreachable from this environment"
+
+  - id: rfnbo_min_savings
+    name: RFNBO minimum GHG savings vs fossil comparator (EU)
+    value: 0.70
+    unit: fraction
+    low: 0.70
+    high: 0.70
+    source: "Directive (EU) 2018/2001 (RED II) Art. 25(2) and 29a; Delegated Regulation (EU) 2023/1185 Annex (savings = (E_F - E)/E_F)"
+    url: https://eur-lex.europa.eu/eli/reg_del/2023/1185/oj/eng
+    vintage: 2023
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "mirrors quote 'minimum savings threshold of 70 %' and the savings formula; max intensity 28.2 gCO2eq/MJ"
+
+  - id: rfnbo_hourly_matching_start_year
+    name: RFNBO temporal correlation becomes hourly from 1 January (year)
+    value: 2030
+    unit: year
+    low: 2028
+    high: 2030
+    source: "Commission Delegated Regulation (EU) 2023/1184, Art. 6 (monthly until 31 Dec 2029; hourly from 1 Jan 2030; Member States may require hourly from 1 July 2027)"
+    url: https://eur-lex.europa.eu/eli/reg_del/2023/1184/oj/eng
+    vintage: 2023
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "CMS legal update (German) quoting Art. 6: hourly from 2030, monthly through 31 Dec 2029, optional earlier from mid-2027"
+
+  - id: rfnbo_grid_ci_threshold
+    name: RFNBO grid-electricity emission-intensity threshold for counting grid power as renewable
+    value: 18
+    unit: gCO2e/MJ
+    low: 18
+    high: 18
+    source: "Commission Delegated Regulation (EU) 2023/1184, Art. 4(3) and recital"
+    url: https://eur-lex.europa.eu/eli/reg_del/2023/1184/2024-06-10/eng
+    vintage: 2024
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "EUR-Lex recital snippet: 'bidding zones where electricity's emission intensity is below 18 gCO2eq/MJ'; operative Art. 4 wording not seen"
+    notes: 18 gCO2e/MJ = 64.8 gCO2e/kWh.
+
+  - id: rfnbo_grid_re_share_threshold
+    name: RFNBO bidding-zone renewable share above which grid power counts as fully renewable
+    value: 0.90
+    unit: fraction
+    low: 0.90
+    high: 0.90
+    source: "Commission Delegated Regulation (EU) 2023/1184, Art. 4(2) and recital"
+    url: https://eur-lex.europa.eu/eli/reg_del/2023/1184/2024-06-10/eng
+    vintage: 2024
+    verification: {status: secondary, date: 2026-10-16, method: "EUR-Lex recital snippet: 'renewables exceed 90% of the energy mix'"}
+
+  - id: lcfs_jet_baseline_2010
+    name: LCFS conventional jet fuel 2010 baseline CI
+    value: 89.37
+    unit: gCO2e/MJ
+    low: 89.37
+    high: 89.37
+    source: "Cal. Code Regs. tit. 17, s. 95484, Table 3 (base year 2010 CI for conventional jet fuel)"
+    url: https://www.law.cornell.edu/regulations/california/17-CCR-95484
+    vintage: 2019
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "Cornell LII copy of s. 95484: 'base year (2010) CI values for conventional jet fuel (89.37)'; arb.ca.gov unreachable"
+
+  - id: lcfs_jet_benchmark_2025
+    name: LCFS jet-fuel-substitute CI benchmark, 2025 (as amended 1 July 2025)
+    value: 81.70
+    unit: gCO2e/MJ
+    low: 81.70
+    high: 86.64
+    source: "Cal. Code Regs. tit. 17, s. 95484(e), Tables 2-3 as amended (OAL-approved 27 June 2025, effective 1 July 2025); CARB 'Overview of the LCFS' (Nov 2025): jet benchmarks mirror diesel"
+    url: https://ww2.arb.ca.gov/sites/default/files/2025-07/2025_lcfs_fro_oal-approved_unofficial_07012025.pdf
+    vintage: 2025
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "IETA and ICCT briefs: diesel 2025 benchmark 86.64 -> 81.70 effective 1 July 2025; CARB overview states jet mirrors diesel. The jet row itself was not seen; high = pre-amendment value. Full 2025-2045 table to be fetched at M4"

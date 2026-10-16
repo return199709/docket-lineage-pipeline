@@ -1,0 +1,24 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - run: make setup
+      - run: make lint
+      - run: make test
+      - run: make run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results
+          path: |
+            results/summary.json
+            results/lineage.json
+            results/factors.csv

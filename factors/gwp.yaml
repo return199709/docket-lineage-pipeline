@@ -1,0 +1,87 @@
+# Global warming potentials (100-year). Primary basis is IPCC AR6; AR5/AR4 kept for rulebooks that
+# still use them. Every factor: id, name, value, unit, low, high, source, url, vintage, verification.
+category: gwp
+factors:
+  - id: gwp100_co2_ar6
+    name: GWP-100 of CO2 (AR6)
+    value: 1
+    unit: kgCO2e/kgCO2
+    low: 1
+    high: 1
+    source: "IPCC AR6 WG1, Chapter 7, Table 7.15 (by definition)"
+    url: https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_Chapter07.pdf
+    vintage: 2021
+    verification: {status: primary, date: 2026-10-16, method: "definition"}
+    notes: Reference gas.
+
+  - id: gwp100_ch4_fossil_ar6
+    name: GWP-100 of fossil-origin methane (AR6)
+    value: 29.8
+    unit: kgCO2e/kgCH4
+    low: 18.8
+    high: 40.8
+    source: "IPCC AR6 WG1, Chapter 7, Table 7.15: CH4-fossil 29.8 +/- 11"
+    url: https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_Chapter07.pdf
+    vintage: 2021
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "GHG Management Institute table citing AR6 Table 7.15 (29.8 fossil / 27.0 non-fossil); IPCC PDF not reachable from this environment"
+    notes: Use for upstream natural-gas leakage. Uncertainty +/-11 per AR6.
+
+  - id: gwp100_ch4_nonfossil_ar6
+    name: GWP-100 of non-fossil methane (AR6)
+    value: 27.0
+    unit: kgCO2e/kgCH4
+    low: 16.0
+    high: 38.0
+    source: "IPCC AR6 WG1, Chapter 7, Table 7.15: CH4-non fossil 27.0 +/- 11"
+    url: https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_Chapter07.pdf
+    vintage: 2021
+    verification:
+      status: secondary
+      date: 2026-10-16
+      method: "GHG Management Institute table citing AR6 Table 7.15; GHG Protocol guidance says combustion CH4 uses the non-fossil value"
+    notes: Use for combustion methane.
+
+  - id: gwp100_n2o_ar6
+    name: GWP-100 of nitrous oxide (AR6)
+    value: 273
+    unit: kgCO2e/kgN2O
+    low: 143
+    high: 403
+    source: "IPCC AR6 WG1, Chapter 7, Table 7.15 and 7.SM.7: N2O 273 +/- 130"
+    url: https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_Chapter07_SM.pdf
+    vintage: 2021
+    verification:
+      status: primary
+      date: 2026-10-16
+      method: "ipcc.ch Chapter 7 supplementary table row quoted in search snippet: 'Nitrous oxide | N2O | ... | 273 | ... | 130'"
+
+  - id: gwp100_ch4_ar5
+    name: GWP-100 of methane (AR5, no climate-carbon feedback)
+    value: 28
+    unit: kgCO2e/kgCH4
+    low: 28
+    high: 34
+    source: "IPCC AR5 WG1, Chapter 8, Table 8.A.1 (28 without, 34 with climate-carbon feedback)"
+    url: https://www.ipcc.ch/site/assets/uploads/2018/02/WG1AR5_Chapter08_FINAL.pdf
+    vintage: 2013
+    verification:
+      status: unverified
+      date: 2026-10-16
+      method: "from knowledge of the cited table; not confirmed this session. Needed by CORSIA (M4) - verify before use"
+
+  - id: gwp100_n2o_ar5
+    name: GWP-100 of nitrous oxide (AR5, no climate-carbon feedback)
+    value: 265
+    unit: kgCO2e/kgN2O
+    low: 265
+    high: 298
+    source: "IPCC AR5 WG1, Chapter 8, Table 8.A.1 (265 without, 298 with climate-carbon feedback)"
+    url: https://www.ipcc.ch/site/assets/uploads/2018/02/WG1AR5_Chapter08_FINAL.pdf
+    vintage: 2013
+    verification:
+      status: unverified
+      date: 2026-10-16
+      method: "from knowledge of the cited table; not confirmed this session. Verify before use"

@@ -227,30 +227,32 @@ factors:
     notes: Gas combustion CO2 is captured in-process in the Keith design; treatment is a methodology assumption (M2).
 
   - id: dac_solid_sorbent_electricity
-    name: DAC electricity demand, solid-sorbent (temperature-vacuum swing)
-    value: 236
+    name: DAC electricity demand, solid-sorbent low-temperature process (Climeworks)
+    value: 250
     unit: kWh/tCO2
-    low: 167
+    low: 200
     high: 305
-    source: "Literature range summarised in arXiv:2510.20135 (solar-thermal DAC design study): 167-305 kWh_el and 1.4-3.2 MWh_th per tCO2"
-    url: https://arxiv.org/pdf/2510.20135
-    vintage: 2025
+    source: "Climeworks (Beuttler, Charles, Wurzbacher 2019, Frontiers in Climate 1:10) as used by Concawe/LBST e-fuels study: 0.2-0.3 MWh_el per tCO2; literature range 167-305 (arXiv:2510.20135)"
+    url: https://doi.org/10.3389/fclim.2019.00010
+    vintage: 2019
     verification:
       status: secondary
-      date: 2026-10-16
-      method: "arXiv snippet; IEA 'Direct Air Capture 2022' primary not reachable. value = midpoint of range"
-    notes: Replace with IEA DAC report table when network allows.
+      date: 2026-10-17
+      method: "AIChE proceedings slide attributed to Climeworks: '0.2-0.3 MWh of electricity per tonne CO2'; Concawe rpt 22-17 snippet: 'energy consumptions are taken from Climeworks [Beuttler et al. 2019]'. Frontiers PDF unreachable"
 
   - id: dac_solid_sorbent_heat
-    name: DAC low-temperature heat demand, solid-sorbent (~100 C regeneration)
-    value: 2300
+    name: DAC low-temperature heat demand, solid-sorbent process (~100 C regeneration, Climeworks)
+    value: 1750
     unit: kWh_th/tCO2
     low: 1400
     high: 3200
-    source: "Literature range summarised in arXiv:2510.20135"
-    url: https://arxiv.org/pdf/2510.20135
-    vintage: 2025
-    verification: {status: secondary, date: 2026-10-16, method: "arXiv snippet; value = midpoint"}
+    source: "Climeworks (Beuttler et al. 2019) as used by Concawe/LBST: 1.5-2.0 MWh_th at 100 C per tCO2; literature range 1.4-3.2 MWh_th (arXiv:2510.20135)"
+    url: https://doi.org/10.3389/fclim.2019.00010
+    vintage: 2019
+    verification:
+      status: secondary
+      date: 2026-10-17
+      method: "AIChE proceedings slide attributed to Climeworks: '1.5-2.0 MWh of heat at 100 C per tonne CO2'; value = midpoint"
 
   - id: co2_point_source_capture_heat
     name: Amine post-combustion capture heat demand (flue gas / industrial point source)
@@ -279,6 +281,49 @@ factors:
       status: unverified
       date: 2026-10-16
       method: "from knowledge; must be verified before use"
+
+  - id: natural_gas_upstream_ci
+    name: Natural-gas supply-chain (well-to-burner-tip) GHG intensity, central estimate
+    value: 10.5
+    unit: gCO2e/MJ_HHV
+    low: 3.6
+    high: 42.4
+    source: "Balcombe, Anderson, Speirs, Brandon, Hawkes (2016) 'The natural gas supply chain: the importance of methane and carbon dioxide emissions', ACS Sustainable Chem. Eng. 5(1):3-20; central 10.5, range 3.6-42.4 gCO2e/MJ HHV"
+    url: https://doi.org/10.1021/acssuschemeng.6b00144
+    vintage: 2016
+    verification:
+      status: secondary
+      date: 2026-10-17
+      method: "Strathclyde repository abstract snippet: 'total supply-chain GHG emissions at 3.6 to 42.4 g CO2e/MJ HHV, with a central estimate of 10.5'. GREET 2023 value not reachable"
+    notes: Upstream only (excludes combustion). Per MJ HHV; convert with ng_hhv_to_lhv_ratio.
+
+  - id: ng_hhv_to_lhv_ratio
+    name: Natural gas gross/net calorific value ratio (HHV/LHV)
+    value: 1.10
+    unit: ratio
+    low: 1.08
+    high: 1.11
+    source: "2006 IPCC Guidelines, Vol. 2, Ch. 1, Section 1.4.1.2: NCV is about 10 % lower than GCV for natural gas"
+    url: https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_1_Ch1_Introduction.pdf
+    vintage: 2006
+    verification:
+      status: unverified
+      date: 2026-10-17
+      method: "from knowledge of the IPCC text; not seen this session. Verify before strict use"
+
+  - id: gas_boiler_efficiency
+    name: Natural-gas boiler thermal efficiency (LHV basis) for process heat
+    value: 0.90
+    unit: fraction
+    low: 0.85
+    high: 0.95
+    source: "Engineering assumption (condensing/industrial boilers 85-95 % LHV); to be cited (e.g., DOE AMO steam tip sheets)"
+    url: https://www.energy.gov/eere/amo/steam-systems
+    vintage: 2012
+    verification:
+      status: unverified
+      date: 2026-10-17
+      method: "assumption; verify before strict use"
 
   # ---- Fischer-Tropsch synthesis ----
   - id: ft_synthesis_efficiency

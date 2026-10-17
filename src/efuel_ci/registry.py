@@ -116,7 +116,7 @@ class Registry:
         except KeyError:
             raise RegistryError(f"unknown factor id: {factor_id!r}") from None
 
-    def value(self, factor_id: str, *, unit: str | None = None) -> float:
+    def value(self, factor_id: str, unit: str | None = None) -> float:
         f = self.get(factor_id)
         if unit is not None and f.unit != unit:
             raise RegistryError(f"{factor_id}: expected unit {unit!r}, registry has {f.unit!r}")

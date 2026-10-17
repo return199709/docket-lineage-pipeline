@@ -56,6 +56,8 @@ verification gate refuses them.
 
 ## 2. Assumptions made at M1 (ranges and conventions)
 
+M2 additions to the registry: `dac_solid_sorbent_*` now carry the Climeworks figures (Beuttler et al. 2019, as used by Concawe/LBST); `natural_gas_upstream_ci` (Balcombe et al. 2016, per MJ HHV); `ng_hhv_to_lhv_ratio` and `gas_boiler_efficiency` are unverified assumptions and blocked in strict mode.
+
 | id | assumption |
 |---|---|
 | `egrid2023_erct_co2_output_rate` | range = eGRID2024 (700.7) to EPA equivalencies-page ERCT value (771.1); a vintage spread, not a statistical interval. |
@@ -74,7 +76,81 @@ verification gate refuses them.
 | `epa_hub_2025_*_freight` | low/high bounds taken from earlier Hub editions from knowledge; to be checked. |
 | GWP basis | AR6 is the engine default; CORSIA and LCFS GWP choices are set per rulebook at M4. |
 
-## 3. Pathway model (M2) - to be written
+## 3. Pathway model (M2)
+
+`efuel_ci.pathway.compute` builds the stage vector for 1 MJ of fuel (LHV) from registry factors only.
+
+### 3.1 Stage definitions and formulas
+
+| stage | formula (per MJ fuel) | factors |
+|---|---|---|
+| electrolysis | `(1/eta_FT) / eta_el / 3.6 kWh x CI_el` | `ft_synthesis_efficiency`, `electrolysis_efficiency_lhv` |
+| co2_capture | CO2 demand `= ft_stoich_co2_per_kg_fuel / LHV`; energy per tCO2 by source (below) | `dac_*`, `co2_*`, `natural_gas_*` |
+| ft_synthesis | 0 (see 3.2-A) | - |
+| transport | `EF_mode [kg/ton-mile] x miles / (LHV x 907.18 kg/ton)` | `epa_hub_2025_*_freight` |
+| combustion | `jet_kerosene_co2_ef` (or `gas_diesel_oil_co2_ef`) in g/MJ | |
+| captured_co2_credit | `-combustion` if `co2_treatment == neutral`, else 0 | |
+
+CO2 capture energy by source:
+- `dac_solid_sorbent`: `dac_solid_sorbent_electricity` (kWh_el/t) + `dac_solid_sorbent_heat` (kWh_th/t) at ~100 C;
+  the heat is supplied by `capture_heat_source`: `electric` (resistive, 1 kWh_el per kWh_th), `waste_heat`
+  (FT exotherm, zero marginal emissions) or `natural_gas` (boiler at `gas_boiler_efficiency`, gas
+  combustion + upstream counted).
+- `dac_liquid_solvent` (Keith et al. 2018 design): `dac_liquid_solvent_electricity` + `dac_liquid_solvent_gas`;
+  the gas is burned in the oxy-fired calciner whose CO2 is captured in-process, so only the gas
+  supply-chain emissions (`natural_gas_upstream_ci x ng_hhv_to_lhv_ratio`) are counted.
+- `point_source`: `co2_compression_electricity` plus, when `include_point_source_capture_heat`,
+  `co2_point_source_capture_heat` (GJ/t) from `capture_heat_source`.
+
+### 3.2 Assumptions (M2)
+
+- **A. Synthesis energy is folded into the FT efficiency.** RWGS, FT, hydrocracking and compression are
+  represented only by `ft_synthesis_efficiency` (fuel LHV / H2 LHV = 0.73, ICCT 2022). Plant auxiliary
+  electricity for synthesis is not modelled separately (no cited figure reachable); it is an under-count
+  of a few percent of plant electricity. The ICCT overall-efficiency band (46-51 %) is enforced as a test.
+- **B. Carbon balance closes at the plant boundary.** CO2 demand is stoichiometric (3.14 kg/kg -CH2-);
+  tail-gas carbon is assumed recycled, so captured CO2 == combusted CO2 (tested within 2 %). Any vented
+  CO2 is of captured origin and therefore has the same treatment as combustion CO2.
+- **C. FT-SPK is given jet kerosene's NCV (44.1 MJ/kg) and combustion factor (71.5 gCO2/MJ);** eDiesel uses
+  gas/diesel oil values. Non-CO2 combustion emissions (CH4, N2O) are omitted (< 0.5 gCO2e/MJ).
+- **D. Hydrogen mass balance is implied, not input:** 1/0.73 MJ H2 per MJ fuel gives 0.50 kg H2 per kg
+  fuel, i.e. 86 % H2 utilisation against stoichiometry; the test checks it sits in the registry range.
+- **E. All plant electricity (electrolysis, DAC, compression, resistive heat) carries one delivered CI**
+  (`electricity_ci`, gCO2e/kWh); the electricity module (M3) supplies it.
+- **F. `co2_treatment`** is the only rulebook-sensitive switch at this level: `neutral` nets combustion CO2
+  against the captured carbon (DAC, biogenic, or point-source where the rulebook credits it);
+  `fossil_attributed` counts combustion CO2 in full. Rulebooks (M4) choose per their rules.
+- **G. Water, catalysts, plant construction (cradle) are excluded**; the model is well-to-wake operational.
+- **H. Transport** uses a fixed distance per scenario by rail/truck/ship with EPA Hub factors (short-ton-miles).
+- **I. DAC heat from FT exotherm** (`waste_heat`) assumes the FT reactor's low-pressure steam (~200 C) covers
+  the ~100 C sorbent regeneration; it is a modelling choice common to LBST/Concawe-type studies, flagged.
+- **J. HHV->LHV for natural gas** uses `ng_hhv_to_lhv_ratio` (1.10, unverified) when applying Balcombe's
+  per-MJ-HHV supply-chain factor.
+
+### 3.3 Energy/mass balance produced (central factors)
+
+Per MJ eSAF, point-source CO2, central efficiencies: 1.370 MJ H2; 0.560 kWh electricity for electrolysis;
+0.503 kg H2 and 3.14 kg CO2 per kg fuel; implied PtL efficiency (fuel LHV / electricity) 49.6 % before
+capture energy, inside ICCT's 46-51 % band.
+
+### 3.4 Published-figure checks (tests, +/-10 %)
+
+1. **Concawe/Aramco e-fuels study, Concawe Review 33(1), May 2025:** cradle-to-grave ~5.5 gCO2eq/MJ for
+   North-Europe e-FT fuels in 2050 (DAC CO2, renewable electricity, 75 % electrolysis). Our run:
+   wind lifecycle CI 11 gCO2e/kWh (`lca_wind_onshore_ar5`), `electrolysis_efficiency_lhv` at its 2050
+   high (0.75), Climeworks DAC with heat from FT waste heat, 300 rail-miles -> **5.94 gCO2e/MJ (+7.9 %)**.
+   Gap: our electricity CI is a generic AR5 wind median (Concawe's North-EU mix and its own LCA factor
+   were not visible), and Concawe's cradle-to-grave includes plant construction, which we exclude; with
+   DAC heat supplied electrically the figure is 7.3 (+33 %), so the waste-heat assumption (I) is doing
+   real work and is flagged.
+2. **Liu, Sandhu, McCoy, Bergerson (2020), Sustainable Energy & Fuels 4:3129-3142:** the DAC + FT pathway
+   beats conventional diesel only below **139 gCO2e/kWh**. Our breakeven with Keith-type DAC and the
+   94 gCO2e/MJ fossil comparator: **152.8 gCO2e/kWh (+9.9 %)**; with 89 (CORSIA) 144.2 (+3.7 %).
+   Gap: Liu's diesel comparator value was not visible (assumed 94); Liu used van der Giesen's FT and
+   2018-era electrolysis, both less efficient than our 2030-case factors, which lowers their breakeven.
+   This check passes only at the edge of +/-10 % and is reported as such.
+   Their baseline 29 gCO2e/MJ could not be checked because the baseline grid factor is not stated in the
+   reachable text.
 
 ## 4. Electricity module (M3) - to be written
 

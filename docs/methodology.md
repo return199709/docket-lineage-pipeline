@@ -152,7 +152,61 @@ capture energy, inside ICCT's 46-51 % band.
    Their baseline 29 gCO2e/MJ could not be checked because the baseline grid factor is not stated in the
    reachable text.
 
-## 4. Electricity module (M3) - to be written
+## 4. Electricity module (M3)
+
+`efuel_ci.electricity` provides (a) the annual ERCOT CI, (b) the hourly CI series and (c) contracted
+clean power with annual / monthly / hourly matching.
+
+### 4.1 Definitions
+
+- **Generation vs delivered.** eGRID output rates and the EIA fuel mix are generation-based. The plant
+  buys delivered power, so every CI used by the pathway is divided by `(1 - egrid2023_erct_grid_gross_loss)`.
+- **Hourly CI (b)** = sum over fuel codes of (MWh_f x EF_f) / sum of MWh_f, per hour, using the EIA-930
+  fuel-type series for respondent ERCO. Two bases:
+  - `direct`: combustion-only per-fuel factors from EIA FAQ 74 (`eia_co2_per_kwh_coal|natural_gas|petroleum`);
+    nuclear, wind, solar, hydro = 0. This is comparable to eGRID (the annual generation-weighted mean of the
+    series is checked against the eGRID ERCT rate once real data are present).
+  - `lifecycle`: IPCC AR5 Annex III medians per fuel (`lca_*_ar5`), including clean generation.
+- **Matching (c).** Within each window (year, calendar month, or hour) the plant's load L_w is matched
+  against contracted clean energy C_w: matched = min(L_w, C_w); residual = L_w - matched, charged at the
+  window's load-weighted hourly grid CI; matched energy is charged `clean_ci` (0 on the direct basis).
+  Surplus clean energy inside a window is not banked into other windows. With window = year this reduces
+  exactly to CI = (1 - share) x annual load-weighted grid CI (tested).
+- **Contracted profile.** `clean_profile` gives the hourly shape of the contracted supply (flat for a
+  firm/baseload PPA; the ERCOT WND and/or SUN series for a wind/solar PPA); it is scaled so its annual energy
+  equals `clean_share` x annual plant load. The plant load is flat (electrolyser at constant output) unless
+  a series is given.
+- **`clean_share_to_clear`** bisects on the share to find the smallest contracted clean fraction whose
+  matched CI meets a target (used for the headline "Z %" at M5).
+
+### 4.2 Assumptions (M3)
+
+- **K. EIA fuel-code mapping.** COL -> coal, NG -> natural gas, OIL -> petroleum, OTH -> treated as natural
+  gas (EIA "Other" is a mixed bag of biomass, waste, landfill gas and unspecified thermal; natural gas is
+  the nearest cited factor), NUC/SUN/WAT/WND -> zero on the direct basis. Codes not in the table raise an
+  error so new codes are classified deliberately. Only SUN, WAT, NG, OTH, NUC, WND were confirmed in EIA
+  output this session; BAT/PS/UES are assumed to be storage codes if they appear.
+- **L. Storage and negative values.** Storage codes are excluded from numerator and denominator (their
+  discharge takes the hour's mix CI); negative generation values (net consumption) are clipped to zero.
+- **M. Direct basis omits upstream** (methane from gas supply, coal mining). The lifecycle basis uses AR5
+  per-technology medians instead; it is not "direct + upstream" (AR5 coal 820 is below the US fleet's
+  direct 1,048 gCO2/kWh because it reflects modern plants). Rulebooks choose the basis at M4.
+- **N. Loss factor** is the eGRID ERCT grid gross loss (4.2 %, provisional) applied uniformly to all hours.
+- **O. Year alignment.** The hourly series year is 2024 (EIA) while the annual factor is eGRID2023; the
+  generation-weighted mean of the 2024 series is reported alongside eGRID2023 so the vintage gap is visible.
+- **P. Monthly residual** is spread over the month's hours in proportion to load (the rulebook only
+  constrains the monthly balance), so a monthly-matched CI is the month's load-weighted grid CI times the
+  month's residual fraction.
+
+### 4.3 Status at M3: hourly data not yet downloaded
+
+`scripts/download.py eia-hourly --year 2024` implements the EIA v2 route
+`electricity/rto/fuel-type-data` (respondent ERCO, hourly, paged at 5,000 rows, retried with backoff) and
+writes `data/raw/eia_erco_fueltype_2024.csv` plus a lineage manifest. It could not be run: api.eia.gov is
+blocked by this environment's network policy and no `EIA_API_KEY` is set. The matching arithmetic is
+therefore tested on a **synthetic, clearly labelled shape generator** (`tests/synthetic_mix.py`) that never
+feeds results; `make run` reports the hourly block as `unavailable` until the real file exists. The annual
+eGRID number is real: ERCOT 2023 332.9 gCO2/kWh at the busbar, 347.5 gCO2/kWh delivered.
 
 ## 5. Rulebook simplifications (M4) - to be written per rulebook
 
